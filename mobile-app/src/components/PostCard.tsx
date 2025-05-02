@@ -1,17 +1,26 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styled } from 'nativewind';
-import { LinearGradient } from 'expo-linear-gradient';
+import Animated, {
+  useAnimatedStyle,
+  withSpring,
+  withSequence,
+  withTiming,
+  useSharedValue,
+  interpolate,
+} from 'react-native-reanimated';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledImage = styled(Image);
+const StyledPressable = styled(Pressable);
 const StyledTouchableOpacity = styled(TouchableOpacity);
-const StyledGradient = styled(LinearGradient);
+const AnimatedPressable = Animated.createAnimatedComponent(StyledPressable);
 
 interface PostCardProps {
-  username?: string;
+  displayName: string;
+  username: string;
   timestamp: string;
   location?: string;
   likes?: number;
@@ -21,119 +30,94 @@ interface PostCardProps {
   avatarUrl?: string;
 }
 
-export const PostCard: React.FC<PostCardProps> = ({
-  username = 'User',
+export default function PostCard({
+  displayName,
+  username,
   timestamp,
   location,
   likes = 0,
   comments = 0,
   onLike,
   onComment,
-  avatarUrl = 'https://via.placeholder.com/40',
-}) => {
+  avatarUrl,
+}: PostCardProps) {
+  const scale = useSharedValue(1);
+  const liked = useSharedValue(false);
+
+  const cardStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.98);
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+  };
+
+  const handleLike = () => {
+    liked.value = !liked.value;
+    scale.value = withSequence(
+      withSpring(1.2),
+      withSpring(1)
+    );
+    onLike?.();
+  };
+
   return (
-    <StyledView className="mx-4 my-2 overflow-hidden">
-      {/* Card with subtle gradient background */}
-      <StyledGradient
-        colors={['#ffffff', '#f8fafc']}
-        className="rounded-3xl p-4 border border-gray-100"
-        style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 12,
-          elevation: 5,
-        }}
-      >
-        {/* Header with avatar and username */}
-        <StyledView className="flex-row items-center mb-4">
-          <StyledView className="mr-3">
-            <StyledImage
-              source={{ uri: avatarUrl }}
-              className="w-12 h-12 rounded-full border-2 border-white"
-              style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            />
+    <AnimatedPressable
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={cardStyle}
+      className="mx-4 my-2"
+    >
+      <StyledView className="bg-white rounded-xl p-4 shadow-sm">
+        <StyledView className="flex-row items-center mb-3">
+          <StyledImage
+            source={{ uri: avatarUrl || 'https://via.placeholder.com/40' }}
+            className="w-10 h-10 rounded-full"
+          />
+          <StyledView className="ml-3 flex-1">
+            <StyledText className="text-base text-gray-900 font-sora-semibold">{displayName}</StyledText>
+            <StyledText className="text-sm text-gray-500 font-sora-regular">@{username}</StyledText>
           </StyledView>
-          <StyledView className="flex-1">
-            <StyledText className="text-base font-bold text-gray-800">{username}</StyledText>
-            <StyledText className="text-xs text-gray-500 mt-0.5">{timestamp}</StyledText>
-          </StyledView>
-          <StyledTouchableOpacity 
-            className="w-10 h-10 rounded-full bg-gray-50 items-center justify-center"
-            style={{
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.05,
-              shadowRadius: 3,
-              elevation: 2,
-            }}
-          >
-            <Ionicons name="notifications-outline" size={20} color="#64748B" />
-          </StyledTouchableOpacity>
+          <StyledText className="text-xs text-gray-400 font-sora-light">{timestamp}</StyledText>
         </StyledView>
-
-        {/* Content Section */}
-        <StyledView className="space-y-3">
-          {/* Date indicator with modern badge style */}
-          <StyledView className="flex-row items-center">
-            <StyledView className="flex-row items-center bg-indigo-50 px-3 py-1.5 rounded-full">
-              <Ionicons name="calendar-outline" size={16} color="#6366F1" />
-              <StyledText className="text-xs font-medium text-indigo-600 ml-1.5">
-                Invalid Date
-              </StyledText>
+        
+        {location && (
+          <StyledView className="mb-3">
+            <StyledView className="flex-row items-center bg-gray-50 self-start px-3 py-1.5 rounded-full">
+              <Ionicons name="location-outline" size={14} color="#6366F1" />
+              <StyledText className="ml-1 text-sm text-gray-600 font-sora-regular">{location}</StyledText>
             </StyledView>
           </StyledView>
-
-          {/* Location with modern badge style */}
-          {location && (
-            <StyledView className="flex-row items-center">
-              <StyledView className="flex-row items-center bg-blue-50 px-3 py-1.5 rounded-full">
-                <Ionicons name="location-outline" size={16} color="#3B82F6" />
-                <StyledText className="text-xs font-medium text-blue-600 ml-1.5">
-                  {location}
-                </StyledText>
-              </StyledView>
-            </StyledView>
-          )}
-        </StyledView>
-
-        {/* Interaction buttons with modern style */}
-        <StyledView className="flex-row mt-6 pt-4 border-t border-gray-100">
+        )}
+        
+        <StyledView className="flex-row justify-between mt-4">
           <StyledTouchableOpacity 
-            className="flex-row items-center mr-6 bg-gray-50 px-4 py-2 rounded-full"
-            onPress={onLike}
+            onPress={handleLike}
+            className="flex-row items-center"
           >
             <Ionicons 
-              name="heart-outline" 
-              size={18} 
-              color="#EC4899"
+              name={liked.value ? "heart" : "heart-outline"} 
+              size={20} 
+              color={liked.value ? "#EC4899" : "#6B7280"} 
             />
-            <StyledText className="text-sm font-medium text-gray-600 ml-2">
-              {likes}
-            </StyledText>
+            <StyledText className="ml-2 text-gray-600 font-sora-regular">{likes}</StyledText>
           </StyledTouchableOpacity>
-
+          
           <StyledTouchableOpacity 
-            className="flex-row items-center bg-gray-50 px-4 py-2 rounded-full"
             onPress={onComment}
+            className="flex-row items-center"
           >
-            <Ionicons 
-              name="chatbubble-outline" 
-              size={18} 
-              color="#8B5CF6"
-            />
-            <StyledText className="text-sm font-medium text-gray-600 ml-2">
-              {comments}
-            </StyledText>
+            <Ionicons name="chatbubble-outline" size={20} color="#6B7280" />
+            <StyledText className="ml-2 text-gray-600 font-sora-regular">{comments}</StyledText>
           </StyledTouchableOpacity>
         </StyledView>
-      </StyledGradient>
-    </StyledView>
+      </StyledView>
+    </AnimatedPressable>
   );
-}; 
+}

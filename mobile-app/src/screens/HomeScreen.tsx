@@ -11,11 +11,13 @@ export const HomeScreen: React.FC = () => {
     <View style={styles.container}>
       <ScrollView style={styles.content}>
         <PostCard
-          username="User"
+          displayName="John Doe"
+          username="johndoe"
           timestamp="02.05.2025 13:37:15"
           location="NABERRRR"
           likes={0}
           comments={0}
+          avatarUrl="https://via.placeholder.com/40"
         />
         {/* Add more PostCard components as needed */}
       </ScrollView>

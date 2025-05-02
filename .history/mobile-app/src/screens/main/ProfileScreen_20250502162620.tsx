@@ -29,29 +29,16 @@ type Post = {
   date_id: string;
   description: string;
   created_at: string;
-  user: {
-    username: string;
-    avatar_url: string | null;
-  };
   date: {
-    datetime: string;
+    date_time: string;
     location: string;
   };
-  likes: number;
-  is_liked: boolean;
-  comments: Comment[];
-};
-
-type Comment = {
-  id: string;
-  post_id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-  user: {
-    username: string;
-    avatar_url: string | null;
-  };
+  likes: Array<{ count: number }>;
+  comments: Array<{
+    id: string;
+    content: string;
+    created_at: string;
+  }>;
 };
 
 type RootStackParamList = {

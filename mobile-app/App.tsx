@@ -7,6 +7,18 @@ import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
 import { Ionicons } from '@expo/vector-icons';
 import { withExpoSnack } from 'nativewind';
+import { 
+  useFonts,
+  Sora_300Light,
+  Sora_400Regular,
+  Sora_500Medium,
+  Sora_600SemiBold,
+  Sora_700Bold,
+} from '@expo-google-fonts/sora';
+import { View, ActivityIndicator } from 'react-native';
+import { styled } from 'nativewind';
+
+const StyledView = styled(View);
 
 // Auth Screens
 import LoginScreen from './src/screens/auth/LoginScreen';
@@ -74,10 +86,26 @@ function MainTabs() {
   );
 }
 
+function LoadingScreen() {
+  return (
+    <StyledView className="flex-1 bg-[#0A0F1C] items-center justify-center">
+      <ActivityIndicator size="large" color="#6366F1" />
+    </StyledView>
+  );
+}
+
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [hasProfile, setHasProfile] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  let [fontsLoaded] = useFonts({
+    Sora_300Light,
+    Sora_400Regular,
+    Sora_500Medium,
+    Sora_600SemiBold,
+    Sora_700Bold,
+  });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -115,8 +143,8 @@ function App() {
     }
   };
 
-  if (loading) {
-    return null;
+  if (loading || !fontsLoaded) {
+    return <LoadingScreen />;
   }
 
   return (
@@ -150,3 +178,4 @@ function AuthStack() {
 }
 
 export default withExpoSnack(App);
+

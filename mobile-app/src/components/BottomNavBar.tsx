@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, Platform } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styled } from 'nativewind';
 import { BlurView } from 'expo-blur';
@@ -7,7 +7,6 @@ import Animated, {
   useAnimatedStyle, 
   withSpring, 
   withTiming,
-  interpolate
 } from 'react-native-reanimated';
 
 const StyledView = styled(View);
