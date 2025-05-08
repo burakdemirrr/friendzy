@@ -218,133 +218,101 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
       weeks.push(week.concat(Array(7 - week.length).fill(null)));
     }
 
-    const handlePrevMonth = () => {
-      const newDate = new Date(postDate);
-      newDate.setMonth(newDate.getMonth() - 1);
-      setPostDate(newDate);
-    };
-
-    const handleNextMonth = () => {
-      const newDate = new Date(postDate);
-      newDate.setMonth(newDate.getMonth() + 1);
-      setPostDate(newDate);
-    };
-
     return (
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
         <div 
-          className="fixed inset-0 bg-black/90 backdrop-blur-xl transition-opacity duration-300"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm"
           onClick={() => setShowWebPicker(false)}
         />
-        <div className="bg-[#0F172A] rounded-2xl shadow-2xl shadow-black/50 w-full max-w-[400px] relative animate-slideUp overflow-hidden border border-slate-700/50">
+        <div className="bg-[#1C2438] rounded-2xl shadow-xl w-full max-w-md relative animate-slideUp">
           {/* Header */}
-          <div className="bg-[#1E293B] px-5 py-4 border-b border-slate-700/50">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-white font-semibold text-lg">Select Date & Time</h2>
-                <p className="text-slate-400 text-sm mt-1">
-                  {formattedDate} at {formattedTime}
-                </p>
-              </div>
+          <div className="p-4 border-b border-gray-700">
+            <div className="flex justify-between items-center">
               <button 
                 onClick={() => setShowWebPicker(false)}
-                className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700/50 transition-colors"
+                className="text-red-500 font-medium text-sm hover:text-red-400 transition-colors px-2 py-1 rounded"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                Cancel
+              </button>
+              <h2 className="text-white font-bold text-lg">
+                Select Date & Time
+              </h2>
+              <button 
+                onClick={() => setShowWebPicker(false)}
+                className="text-indigo-500 font-medium text-sm hover:text-indigo-400 transition-colors px-2 py-1 rounded"
+              >
+                Done
               </button>
             </div>
           </div>
 
-          <div className="p-5">
-            {/* Calendar Navigation */}
-            <div className="flex items-center justify-between mb-4">
-              <button 
-                onClick={handlePrevMonth}
-                className="p-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
+          <div className="p-6">
+            {/* Month and Year */}
+            <div className="flex justify-center items-center mb-6">
+              <button className="text-gray-400 hover:text-white p-2">
+                <Ionicons name="chevron-back" size={20} />
               </button>
-              <h3 className="text-white font-medium">
+              <h3 className="text-white font-semibold text-xl px-4">
                 {months[currentMonth]} {currentYear}
               </h3>
-              <button 
-                onClick={handleNextMonth}
-                className="p-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+              <button className="text-gray-400 hover:text-white p-2">
+                <Ionicons name="chevron-forward" size={20} />
               </button>
             </div>
 
             {/* Calendar */}
-            <div className="mb-5">
+            <div className="mb-6">
               <div className="grid grid-cols-7 mb-2">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="text-center text-slate-500 text-xs font-medium">
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                  <div key={day} className="text-center text-gray-400 text-xs font-medium">
                     {day}
                   </div>
                 ))}
               </div>
-              <div className="rounded-xl overflow-hidden bg-slate-800/30 border border-slate-700/50">
-                {weeks.map((week, weekIndex) => (
-                  <div key={weekIndex} className="grid grid-cols-7 divide-x divide-slate-700/30">
-                    {week.map((day, dayIndex) => {
-                      if (day === null) return (
-                        <div 
-                          key={`empty-${dayIndex}`} 
-                          className="h-10 bg-slate-800/20"
-                        />
-                      );
-                      
-                      const date = new Date(currentYear, currentMonth, day);
-                      const isSelected = 
-                        date.getDate() === postDate.getDate() && 
-                        date.getMonth() === postDate.getMonth() && 
-                        date.getFullYear() === postDate.getFullYear();
-                      const isPast = date < today;
-                      const isToday = 
-                        date.getDate() === today.getDate() && 
-                        date.getMonth() === today.getMonth() && 
-                        date.getFullYear() === today.getFullYear();
+              {weeks.map((week, weekIndex) => (
+                <div key={weekIndex} className="grid grid-cols-7">
+                  {week.map((day, dayIndex) => {
+                    if (day === null) return <div key={`empty-${dayIndex}`} className="h-10" />;
+                    
+                    const date = new Date(currentYear, currentMonth, day);
+                    const isSelected = 
+                      date.getDate() === postDate.getDate() && 
+                      date.getMonth() === postDate.getMonth() && 
+                      date.getFullYear() === postDate.getFullYear();
+                    const isPast = date < today;
+                    const isToday = 
+                      date.getDate() === today.getDate() && 
+                      date.getMonth() === today.getMonth() && 
+                      date.getFullYear() === today.getFullYear();
 
-                      return (
-                        <button
-                          key={day}
-                          onClick={() => !isPast && handleWebDateSelect(day)}
-                          disabled={isPast}
-                          className={`
-                            h-10 w-full flex items-center justify-center relative
-                            transition-colors duration-150
-                            ${isSelected ? 'bg-indigo-500/10' : 'hover:bg-slate-700/30'}
-                            ${isPast ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-white'}
-                            ${isToday ? 'font-medium' : ''}
-                          `}
-                        >
-                          <span className={`
-                            w-8 h-8 flex items-center justify-center rounded-lg
-                            transition-colors duration-150
-                            ${isSelected ? 'bg-indigo-500 text-white' : ''}
-                            ${isToday && !isSelected ? 'ring-1 ring-indigo-400/30' : ''}
-                          `}>
-                            {day}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
+                    return (
+                      <button
+                        key={day}
+                        onClick={() => !isPast && handleWebDateSelect(day)}
+                        disabled={isPast}
+                        className={`
+                          h-10 w-10 mx-auto rounded-full flex items-center justify-center text-sm
+                          transition-all duration-200 relative
+                          ${isSelected ? 'bg-indigo-500 text-white font-semibold' : ''}
+                          ${isPast ? 'text-gray-600 cursor-not-allowed' : 'text-white hover:bg-indigo-500/20'}
+                          ${isToday ? 'font-semibold' : ''}
+                        `}
+                      >
+                        {day}
+                        {isToday && !isSelected && (
+                          <div className="absolute -bottom-1 w-1 h-1 bg-indigo-500 rounded-full" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
 
             {/* Time Selection */}
-            <div className="space-y-3">
-              <h4 className="text-slate-400 text-sm font-medium">Select Time</h4>
-              <div className="grid grid-cols-4 gap-2 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="border-t border-gray-700 pt-4">
+              <h4 className="text-gray-400 text-sm font-medium mb-3">Select Time</h4>
+              <div className="grid grid-cols-4 gap-2 max-h-36 overflow-y-auto custom-scrollbar">
                 {timeSlots.map(time => {
                   const [hours, minutes] = time.split(':').map(Number);
                   const timeDate = new Date(postDate);
@@ -360,9 +328,9 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
                       onClick={() => !isPast && handleWebTimeSelect(time)}
                       disabled={isPast}
                       className={`
-                        py-2 rounded-lg text-sm font-medium transition-colors duration-150
-                        ${isSelected ? 'bg-indigo-500 text-white' : 'bg-slate-800/50 hover:bg-slate-700/50'}
-                        ${isPast ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-white'}
+                        py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200
+                        ${isSelected ? 'bg-indigo-500 text-white' : ''}
+                        ${isPast ? 'text-gray-600 cursor-not-allowed' : 'text-white hover:bg-indigo-500/20'}
                       `}
                     >
                       {time}
@@ -370,22 +338,6 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
                   );
                 })}
               </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-end space-x-2 mt-5 pt-5 border-t border-slate-700/50">
-              <button
-                onClick={() => setShowWebPicker(false)}
-                className="px-4 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setShowWebPicker(false)}
-                className="px-4 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors"
-              >
-                Confirm
-              </button>
             </div>
           </div>
         </div>
@@ -396,12 +348,12 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
   // Add this CSS to your global styles or component
   const styles = `
     .animate-slideUp {
-      animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: slideUp 0.3s ease-out;
     }
 
     @keyframes slideUp {
       from {
-        transform: translateY(8px);
+        transform: translateY(20px);
         opacity: 0;
       }
       to {
@@ -412,25 +364,21 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
 
     .custom-scrollbar {
       scrollbar-width: thin;
-      scrollbar-color: rgba(99, 102, 241, 0.3) rgba(30, 41, 59, 0.5);
+      scrollbar-color: #4F46E5 #1C2438;
     }
 
     .custom-scrollbar::-webkit-scrollbar {
-      width: 4px;
+      width: 6px;
     }
 
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(30, 41, 59, 0.5);
-      border-radius: 2px;
+      background: #1C2438;
+      border-radius: 3px;
     }
 
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background-color: rgba(99, 102, 241, 0.3);
-      border-radius: 2px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(99, 102, 241, 0.5);
+      background-color: #4F46E5;
+      border-radius: 3px;
     }
   `;
 

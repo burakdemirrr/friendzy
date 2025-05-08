@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, Dimensions, Animated, Easing } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, Animated, Easing } from 'react-native';
 import { supabase } from '../../../lib/supabase';
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
@@ -16,20 +16,17 @@ const StyledLinearGradient = styled(LinearGradient);
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledKeyboardAvoidingView = styled(KeyboardAvoidingView);
 
-const { width } = Dimensions.get('window');
-
 type RootStackParamList = {
   Login: undefined;
   Register: undefined;
-  Onboarding: undefined;
-  Home: undefined;
 };
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Register'>;
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<NavigationProp>();
@@ -77,9 +74,14 @@ export default function LoginScreen() {
   const AnimatedStyledView = Animated.createAnimatedComponent(StyledView);
   const AnimatedStyledTouchableOpacity = Animated.createAnimatedComponent(StyledTouchableOpacity);
 
-  async function handleLogin() {
+  const handleRegister = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
       return;
     }
 
@@ -87,34 +89,24 @@ export default function LoginScreen() {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (error) throw error;
-      
-      // Check if user has a profile
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        
-        if (!profile) {
-          navigation.navigate('Onboarding');
-        } else {
-          navigation.navigate('Home');
-        }
-      }
+
+      Alert.alert(
+        'Success',
+        'Registration successful! Please check your email for verification.',
+        [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
+      );
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <StyledSafeAreaView className="flex-1 bg-white">
@@ -144,7 +136,7 @@ export default function LoginScreen() {
                   transform: [{ scale: scaleAnim }],
                 }}
               >
-                <Ionicons name="lock-closed" size={32} color={colors.primary} />
+                <Ionicons name="person-add" size={32} color={colors.primary} />
               </AnimatedStyledView>
               <AnimatedStyledView
                 style={{
@@ -159,8 +151,8 @@ export default function LoginScreen() {
                     letterSpacing: 0.37
                   }}
                 >
-                Welcome back
-              </StyledText>
+                  Create Account
+                </StyledText>
                 <StyledText 
                   className="text-base"
                   style={{ 
@@ -168,8 +160,8 @@ export default function LoginScreen() {
                     letterSpacing: -0.41
                   }}
                 >
-                Sign in to continue
-              </StyledText>
+                  Sign up to get started
+                </StyledText>
               </AnimatedStyledView>
             </StyledView>
           </StyledView>
@@ -182,13 +174,13 @@ export default function LoginScreen() {
               transform: [{ translateY: slideAnim }],
             }}
           >
-              <StyledView>
+            <StyledView>
               <StyledText 
                 className="text-sm font-medium mb-2 ml-1"
                 style={{ color: colors.text.secondary }}
               >
-                  Email Address
-                </StyledText>
+                Email Address
+              </StyledText>
               <StyledView 
                 className="rounded-xl flex-row items-center px-4"
                 style={{ 
@@ -197,30 +189,30 @@ export default function LoginScreen() {
                 }}
               >
                 <Ionicons name="mail-outline" size={20} color={colors.text.secondary} />
-                  <StyledTextInput
+                <StyledTextInput
                   className="flex-1 py-3.5 px-3 text-base"
                   style={{ 
                     color: colors.text.primary,
                     fontSize: typography.body.fontSize,
                     letterSpacing: typography.body.letterSpacing
                   }}
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    placeholder="Enter your email"
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  placeholder="Enter your email"
                   placeholderTextColor={colors.text.muted}
-                  />
-                </StyledView>
+                />
               </StyledView>
+            </StyledView>
 
-              <StyledView>
+            <StyledView>
               <StyledText 
                 className="text-sm font-medium mb-2 ml-1"
                 style={{ color: colors.text.secondary }}
               >
-                  Password
-                </StyledText>
+                Password
+              </StyledText>
               <StyledView 
                 className="rounded-xl flex-row items-center px-4"
                 style={{ 
@@ -229,31 +221,62 @@ export default function LoginScreen() {
                 }}
               >
                 <Ionicons name="lock-closed-outline" size={20} color={colors.text.secondary} />
-                  <StyledTextInput
+                <StyledTextInput
                   className="flex-1 py-3.5 px-3 text-base"
                   style={{ 
                     color: colors.text.primary,
                     fontSize: typography.body.fontSize,
                     letterSpacing: typography.body.letterSpacing
                   }}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
-                    placeholder="Enter your password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  placeholder="Create a password"
                   placeholderTextColor={colors.text.muted}
-                  />
-                  <StyledTouchableOpacity 
-                    onPress={() => setShowPassword(!showPassword)}
-                    className="p-2"
-                  >
-                    <Ionicons 
-                      name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                      size={20} 
+                />
+                <StyledTouchableOpacity 
+                  onPress={() => setShowPassword(!showPassword)}
+                  className="p-2"
+                >
+                  <Ionicons 
+                    name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                    size={20} 
                     color={colors.text.secondary}
-                    />
-                  </StyledTouchableOpacity>
-                </StyledView>
+                  />
+                </StyledTouchableOpacity>
               </StyledView>
+            </StyledView>
+
+            <StyledView>
+              <StyledText 
+                className="text-sm font-medium mb-2 ml-1"
+                style={{ color: colors.text.secondary }}
+              >
+                Confirm Password
+              </StyledText>
+              <StyledView 
+                className="rounded-xl flex-row items-center px-4"
+                style={{ 
+                  backgroundColor: colors.background.secondary,
+                  ...shadows.sm
+                }}
+              >
+                <Ionicons name="lock-closed-outline" size={20} color={colors.text.secondary} />
+                <StyledTextInput
+                  className="flex-1 py-3.5 px-3 text-base"
+                  style={{ 
+                    color: colors.text.primary,
+                    fontSize: typography.body.fontSize,
+                    letterSpacing: typography.body.letterSpacing
+                  }}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!showPassword}
+                  placeholder="Confirm your password"
+                  placeholderTextColor={colors.text.muted}
+                />
+              </StyledView>
+            </StyledView>
           </AnimatedStyledView>
 
           {/* Bottom Section */}
@@ -265,7 +288,7 @@ export default function LoginScreen() {
             }}
           >
             <AnimatedStyledTouchableOpacity
-                onPress={handleLogin}
+              onPress={handleRegister}
               disabled={isLoading}
               onPressIn={() => animateButtonPress(true)}
               onPressOut={() => animateButtonPress(false)}
@@ -283,12 +306,12 @@ export default function LoginScreen() {
                   letterSpacing: -0.41
                 }}
               >
-                {isLoading ? 'Signing in...' : 'Sign In'}
-                    </StyledText>
+                {isLoading ? 'Creating Account...' : 'Create Account'}
+              </StyledText>
             </AnimatedStyledTouchableOpacity>
 
             <AnimatedStyledTouchableOpacity
-                onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('Login')}
               onPressIn={() => animateButtonPress(true)}
               onPressOut={() => animateButtonPress(false)}
               className="h-[52px] rounded-xl items-center justify-center"
@@ -305,8 +328,8 @@ export default function LoginScreen() {
                   letterSpacing: -0.41
                 }}
               >
-                Create Account
-                  </StyledText>
+                Sign In Instead
+              </StyledText>
             </AnimatedStyledTouchableOpacity>
           </AnimatedStyledView>
         </AnimatedStyledView>

@@ -159,8 +159,8 @@ export default function LoginScreen() {
                     letterSpacing: 0.37
                   }}
                 >
-                Welcome back
-              </StyledText>
+                  Welcome back
+                </StyledText>
                 <StyledText 
                   className="text-base"
                   style={{ 
@@ -168,8 +168,8 @@ export default function LoginScreen() {
                     letterSpacing: -0.41
                   }}
                 >
-                Sign in to continue
-              </StyledText>
+                  Sign in to continue
+                </StyledText>
               </AnimatedStyledView>
             </StyledView>
           </StyledView>
@@ -182,13 +182,13 @@ export default function LoginScreen() {
               transform: [{ translateY: slideAnim }],
             }}
           >
-              <StyledView>
+            <StyledView>
               <StyledText 
                 className="text-sm font-medium mb-2 ml-1"
                 style={{ color: colors.text.secondary }}
               >
-                  Email Address
-                </StyledText>
+                Email Address
+              </StyledText>
               <StyledView 
                 className="rounded-xl flex-row items-center px-4"
                 style={{ 
@@ -197,30 +197,30 @@ export default function LoginScreen() {
                 }}
               >
                 <Ionicons name="mail-outline" size={20} color={colors.text.secondary} />
-                  <StyledTextInput
+                <StyledTextInput
                   className="flex-1 py-3.5 px-3 text-base"
                   style={{ 
                     color: colors.text.primary,
                     fontSize: typography.body.fontSize,
                     letterSpacing: typography.body.letterSpacing
                   }}
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    placeholder="Enter your email"
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  placeholder="Enter your email"
                   placeholderTextColor={colors.text.muted}
-                  />
-                </StyledView>
+                />
               </StyledView>
+            </StyledView>
 
-              <StyledView>
+            <StyledView>
               <StyledText 
                 className="text-sm font-medium mb-2 ml-1"
                 style={{ color: colors.text.secondary }}
               >
-                  Password
-                </StyledText>
+                Password
+              </StyledText>
               <StyledView 
                 className="rounded-xl flex-row items-center px-4"
                 style={{ 
@@ -229,31 +229,31 @@ export default function LoginScreen() {
                 }}
               >
                 <Ionicons name="lock-closed-outline" size={20} color={colors.text.secondary} />
-                  <StyledTextInput
+                <StyledTextInput
                   className="flex-1 py-3.5 px-3 text-base"
                   style={{ 
                     color: colors.text.primary,
                     fontSize: typography.body.fontSize,
                     letterSpacing: typography.body.letterSpacing
                   }}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
-                    placeholder="Enter your password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  placeholder="Enter your password"
                   placeholderTextColor={colors.text.muted}
-                  />
-                  <StyledTouchableOpacity 
-                    onPress={() => setShowPassword(!showPassword)}
-                    className="p-2"
-                  >
-                    <Ionicons 
-                      name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                      size={20} 
+                />
+                <StyledTouchableOpacity 
+                  onPress={() => setShowPassword(!showPassword)}
+                  className="p-2"
+                >
+                  <Ionicons 
+                    name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                    size={20} 
                     color={colors.text.secondary}
-                    />
-                  </StyledTouchableOpacity>
-                </StyledView>
+                  />
+                </StyledTouchableOpacity>
               </StyledView>
+            </StyledView>
           </AnimatedStyledView>
 
           {/* Bottom Section */}
@@ -265,7 +265,7 @@ export default function LoginScreen() {
             }}
           >
             <AnimatedStyledTouchableOpacity
-                onPress={handleLogin}
+              onPress={handleLogin}
               disabled={isLoading}
               onPressIn={() => animateButtonPress(true)}
               onPressOut={() => animateButtonPress(false)}
@@ -284,11 +284,11 @@ export default function LoginScreen() {
                 }}
               >
                 {isLoading ? 'Signing in...' : 'Sign In'}
-                    </StyledText>
+              </StyledText>
             </AnimatedStyledTouchableOpacity>
 
             <AnimatedStyledTouchableOpacity
-                onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('Register')}
               onPressIn={() => animateButtonPress(true)}
               onPressOut={() => animateButtonPress(false)}
               className="h-[52px] rounded-xl items-center justify-center"
@@ -306,7 +306,7 @@ export default function LoginScreen() {
                 }}
               >
                 Create Account
-                  </StyledText>
+              </StyledText>
             </AnimatedStyledTouchableOpacity>
           </AnimatedStyledView>
         </AnimatedStyledView>

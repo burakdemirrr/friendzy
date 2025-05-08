@@ -251,7 +251,7 @@ export default function FriendsScreen() {
   const AnimatedStyledView = Animated.createAnimatedComponent(StyledView);
 
   return (
-    <StyledSafeAreaView className="flex-1 bg-[#0A0F1C]">
+    <StyledSafeAreaView className="flex-1 bg-white">
       {/* Header */}
       <AnimatedStyledView 
         className="px-6 pt-2 pb-4"
@@ -266,7 +266,7 @@ export default function FriendsScreen() {
         <StyledText 
           className="text-[28px] font-bold mb-4"
           style={{ 
-            color: colors.text.white,
+            color: colors.text.primary,
             letterSpacing: typography.h2.letterSpacing
           }}
         >
@@ -277,20 +277,20 @@ export default function FriendsScreen() {
         <StyledView 
           className="flex-row items-center rounded-xl px-4 py-3"
           style={{ 
-            backgroundColor: '#1C2438',
+            backgroundColor: colors.background.secondary,
             ...shadows.sm
           }}
         >
-          <Ionicons name="search" size={20} color="#6B7280" />
+          <Ionicons name="search" size={20} color={colors.text.secondary} />
           <StyledTextInput
             className="flex-1 ml-2 text-base"
             style={{ 
-              color: colors.text.white,
+              color: colors.text.primary,
               fontSize: typography.body.fontSize,
               letterSpacing: typography.body.letterSpacing
             }}
             placeholder="Search friends"
-            placeholderTextColor="#6B7280"
+            placeholderTextColor={colors.text.muted}
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={searchUsers}
@@ -300,12 +300,12 @@ export default function FriendsScreen() {
               onPress={() => setSearchQuery('')}
               className="p-1"
             >
-              <Ionicons name="close-circle" size={20} color="#6B7280" />
+              <Ionicons name="close-circle" size={20} color={colors.text.secondary} />
             </StyledTouchableOpacity>
           )}
         </StyledView>
       </AnimatedStyledView>
-      
+
       <StyledScrollView className="flex-1 px-6">
         {/* Friend Requests Section */}
         {friendRequests.length > 0 && (
@@ -322,7 +322,7 @@ export default function FriendsScreen() {
             <StyledText 
               className="text-base font-semibold mb-3"
               style={{ 
-                color: '#6B7280',
+                color: colors.text.secondary,
                 letterSpacing: typography.body.letterSpacing
               }}
             >
@@ -334,9 +334,8 @@ export default function FriendsScreen() {
                 return (
                   <AnimatedStyledView
                     key={request.id}
-                    className="rounded-xl p-4"
+                    className="bg-white rounded-xl p-4"
                     style={{
-                      backgroundColor: '#1C2438',
                       ...shadows.sm,
                       opacity: itemAnim,
                       transform: [{ scale: itemAnim }]
@@ -345,7 +344,7 @@ export default function FriendsScreen() {
                     <StyledView className="flex-row items-center">
                       <StyledView 
                         className="w-12 h-12 rounded-full items-center justify-center mr-3"
-                        style={{ backgroundColor: '#818CF810' }}
+                        style={{ backgroundColor: `${colors.primary}10` }}
                       >
                         {request.user?.avatar_url ? (
                           <StyledImage
@@ -353,26 +352,26 @@ export default function FriendsScreen() {
                             className="w-full h-full rounded-full"
                           />
                         ) : (
-                          <Ionicons name="person" size={24} color="#818CF8" />
+                          <Ionicons name="person" size={24} color={colors.primary} />
                         )}
                       </StyledView>
                       <StyledView className="flex-1">
                         <StyledText 
                           className="font-semibold"
                           style={{ 
-                            color: colors.text.white,
+                            color: colors.text.primary,
                             fontSize: typography.body.fontSize,
                             letterSpacing: typography.body.letterSpacing
                           }}
                         >
                           {request.user?.username}
                         </StyledText>
-          </StyledView>
+                      </StyledView>
                       <StyledView className="flex-row space-x-2">
                         <StyledTouchableOpacity
                           onPress={() => handleAcceptRequest(request.id)}
                           className="px-4 py-2 rounded-xl"
-                          style={{ backgroundColor: '#818CF8' }}
+                          style={{ backgroundColor: colors.primary }}
                         >
                           <StyledText 
                             className="font-medium"
@@ -381,14 +380,14 @@ export default function FriendsScreen() {
                             Accept
                           </StyledText>
                         </StyledTouchableOpacity>
-              <StyledTouchableOpacity
+                        <StyledTouchableOpacity
                           onPress={() => handleRejectRequest(request.id)}
                           className="px-4 py-2 rounded-xl"
-                          style={{ backgroundColor: '#1F2937' }}
+                          style={{ backgroundColor: colors.background.secondary }}
                         >
                           <StyledText 
                             className="font-medium"
-                            style={{ color: '#6B7280' }}
+                            style={{ color: colors.text.secondary }}
                           >
                             Decline
                           </StyledText>
@@ -415,7 +414,7 @@ export default function FriendsScreen() {
           <StyledText 
             className="text-base font-semibold mb-3"
             style={{ 
-              color: '#6B7280',
+              color: colors.text.secondary,
               letterSpacing: typography.body.letterSpacing
             }}
           >
@@ -427,33 +426,32 @@ export default function FriendsScreen() {
               return (
                 <AnimatedStyledView
                   key={friend.id}
-                  className="rounded-xl p-4"
+                  className="bg-white rounded-xl p-4"
                   style={{
-                    backgroundColor: '#1C2438',
                     ...shadows.sm,
                     opacity: itemAnim,
                     transform: [{ scale: itemAnim }]
                   }}
-              >
-                <StyledView className="flex-row items-center">
+                >
+                  <StyledView className="flex-row items-center">
                     <StyledView 
                       className="w-12 h-12 rounded-full items-center justify-center mr-3"
-                      style={{ backgroundColor: '#818CF810' }}
+                      style={{ backgroundColor: `${colors.primary}10` }}
                     >
                       {friend.avatar_url ? (
-                      <StyledImage
+                        <StyledImage
                           source={{ uri: friend.avatar_url }}
-                        className="w-full h-full rounded-full"
-                      />
-                    ) : (
-                      <Ionicons name="person" size={24} color="#818CF8" />
-                    )}
-                  </StyledView>
-                  <StyledView className="flex-1">
+                          className="w-full h-full rounded-full"
+                        />
+                      ) : (
+                        <Ionicons name="person" size={24} color={colors.primary} />
+                      )}
+                    </StyledView>
+                    <StyledView className="flex-1">
                       <StyledText 
                         className="font-semibold"
                         style={{ 
-                          color: colors.text.white,
+                          color: colors.text.primary,
                           fontSize: typography.body.fontSize,
                           letterSpacing: typography.body.letterSpacing
                         }}
@@ -465,26 +463,26 @@ export default function FriendsScreen() {
                       <StyledTouchableOpacity
                         onPress={() => navigation.navigate('Chat', { friend })}
                         className="px-4 py-2 rounded-xl"
-                        style={{ backgroundColor: '#818CF8' }}
+                        style={{ backgroundColor: colors.primary }}
                       >
                         <StyledText 
                           className="font-medium"
                           style={{ color: colors.text.white }}
                         >
                           Message
-                    </StyledText>
+                        </StyledText>
                       </StyledTouchableOpacity>
                       <StyledTouchableOpacity
                         onPress={() => handleRemoveFriend(friend.id)}
                         className="px-4 py-2 rounded-xl"
-                        style={{ backgroundColor: '#1F2937' }}
+                        style={{ backgroundColor: colors.background.secondary }}
                       >
                         <StyledText 
                           className="font-medium"
-                          style={{ color: '#6B7280' }}
+                          style={{ color: colors.text.secondary }}
                         >
                           Remove
-                    </StyledText>
+                        </StyledText>
                       </StyledTouchableOpacity>
                     </StyledView>
                   </StyledView>
@@ -497,7 +495,7 @@ export default function FriendsScreen() {
         {/* Loading State */}
         {loading && (
           <StyledView className="py-4">
-            <ActivityIndicator size="large" color="#818CF8" />
+            <ActivityIndicator size="large" color={colors.primary} />
           </StyledView>
         )}
 
@@ -506,14 +504,14 @@ export default function FriendsScreen() {
           <StyledView className="py-8 items-center">
             <StyledView 
               className="w-16 h-16 rounded-full items-center justify-center mb-4"
-              style={{ backgroundColor: '#818CF810' }}
+              style={{ backgroundColor: `${colors.primary}10` }}
             >
-              <Ionicons name="people" size={32} color="#818CF8" />
+              <Ionicons name="people" size={32} color={colors.primary} />
             </StyledView>
             <StyledText 
               className="text-center text-base"
               style={{ 
-                color: '#6B7280',
+                color: colors.text.secondary,
                 letterSpacing: typography.body.letterSpacing
               }}
             >

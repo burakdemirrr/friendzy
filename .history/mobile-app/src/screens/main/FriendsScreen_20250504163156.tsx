@@ -305,7 +305,7 @@ export default function FriendsScreen() {
           )}
         </StyledView>
       </AnimatedStyledView>
-      
+
       <StyledScrollView className="flex-1 px-6">
         {/* Friend Requests Section */}
         {friendRequests.length > 0 && (
@@ -367,7 +367,7 @@ export default function FriendsScreen() {
                         >
                           {request.user?.username}
                         </StyledText>
-          </StyledView>
+                      </StyledView>
                       <StyledView className="flex-row space-x-2">
                         <StyledTouchableOpacity
                           onPress={() => handleAcceptRequest(request.id)}
@@ -381,7 +381,7 @@ export default function FriendsScreen() {
                             Accept
                           </StyledText>
                         </StyledTouchableOpacity>
-              <StyledTouchableOpacity
+                        <StyledTouchableOpacity
                           onPress={() => handleRejectRequest(request.id)}
                           className="px-4 py-2 rounded-xl"
                           style={{ backgroundColor: '#1F2937' }}
@@ -434,22 +434,22 @@ export default function FriendsScreen() {
                     opacity: itemAnim,
                     transform: [{ scale: itemAnim }]
                   }}
-              >
-                <StyledView className="flex-row items-center">
+                >
+                  <StyledView className="flex-row items-center">
                     <StyledView 
                       className="w-12 h-12 rounded-full items-center justify-center mr-3"
                       style={{ backgroundColor: '#818CF810' }}
                     >
                       {friend.avatar_url ? (
-                      <StyledImage
+                        <StyledImage
                           source={{ uri: friend.avatar_url }}
-                        className="w-full h-full rounded-full"
-                      />
-                    ) : (
-                      <Ionicons name="person" size={24} color="#818CF8" />
-                    )}
-                  </StyledView>
-                  <StyledView className="flex-1">
+                          className="w-full h-full rounded-full"
+                        />
+                      ) : (
+                        <Ionicons name="person" size={24} color="#818CF8" />
+                      )}
+                    </StyledView>
+                    <StyledView className="flex-1">
                       <StyledText 
                         className="font-semibold"
                         style={{ 
@@ -472,7 +472,7 @@ export default function FriendsScreen() {
                           style={{ color: colors.text.white }}
                         >
                           Message
-                    </StyledText>
+                        </StyledText>
                       </StyledTouchableOpacity>
                       <StyledTouchableOpacity
                         onPress={() => handleRemoveFriend(friend.id)}
@@ -484,7 +484,7 @@ export default function FriendsScreen() {
                           style={{ color: '#6B7280' }}
                         >
                           Remove
-                    </StyledText>
+                        </StyledText>
                       </StyledTouchableOpacity>
                     </StyledView>
                   </StyledView>

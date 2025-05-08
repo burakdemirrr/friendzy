@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Platform, Modal } from 'react-native';
 import { styled } from 'nativewind';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { supabase } from '../../../lib/supabase';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -84,14 +84,10 @@ export default function SendDateScreen() {
   const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   // Handle date or time change
-  const handleDateTimeChange = (event: DateTimePickerEvent, selectedValue?: Date) => {
-    const { type } = event;
-    
-    // Handle Android cancel action
-    if (type === 'dismissed' || (Platform.OS === 'android' && !selectedValue)) {
+  const handleDateTimeChange = (event: any, selectedValue: Date | undefined) => {
+    if (Platform.OS === 'android') {
       setShowDatePicker(false);
       setShowTimePicker(false);
-      return;
     }
     
     if (selectedValue) {
@@ -109,19 +105,13 @@ export default function SendDateScreen() {
           setPickerMode('time');
         } else if (Platform.OS === 'android') {
           // On Android, we need to manually show the time picker
-          setShowDatePicker(false);
           setTimeout(() => {
             setPickerMode('time');
             setShowTimePicker(true);
-          }, 300);
+          }, 500);
         }
       } else {
         newDate.setHours(selectedValue.getHours(), selectedValue.getMinutes());
-        // Close the picker after time is selected
-        if (Platform.OS === 'ios') {
-          setShowDatePicker(false);
-          setShowTimePicker(false);
-        }
       }
       
       setDate(newDate);
@@ -131,13 +121,11 @@ export default function SendDateScreen() {
   const openDatePicker = () => {
     setPickerMode('date');
     setShowDatePicker(true);
-    setShowTimePicker(false);
   };
 
   const openTimePicker = () => {
     setPickerMode('time');
     setShowTimePicker(true);
-    setShowDatePicker(false);
   };
 
   return (
@@ -186,29 +174,24 @@ export default function SendDateScreen() {
           </StyledView>
         </StyledView>
 
-        {/* Date & Time Picker for Android */}
-        {Platform.OS === 'android' && (
-          <>
-            {showDatePicker && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                is24Hour={true}
-                display="default"
-                onChange={handleDateTimeChange}
-                minimumDate={new Date()}
-              />
-            )}
-            {showTimePicker && (
-              <DateTimePicker
-                value={date}
-                mode="time"
-                is24Hour={true}
-                display="default"
-                onChange={handleDateTimeChange}
-              />
-            )}
-          </>
+        {/* Date Picker Modal for Android */}
+        {(Platform.OS === 'android') && showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={handleDateTimeChange}
+          />
+        )}
+
+        {/* Time Picker Modal for Android */}
+        {(Platform.OS === 'android') && showTimePicker && (
+          <DateTimePicker
+            value={date}
+            mode="time"
+            display="default"
+            onChange={handleDateTimeChange}
+          />
         )}
 
         {/* Date & Time Picker for iOS */}
@@ -221,13 +204,10 @@ export default function SendDateScreen() {
             <StyledView className="flex-1 justify-end bg-black/50">
               <StyledView className="bg-[#1C2438] rounded-t-xl p-4">
                 <StyledView className="flex-row justify-between items-center mb-4">
-                  <StyledTouchableOpacity 
-                    onPress={() => {
-                      setShowDatePicker(false);
-                      setShowTimePicker(false);
-                      setPickerMode('date');
-                    }}
-                  >
+                  <StyledTouchableOpacity onPress={() => {
+                    setShowDatePicker(false);
+                    setShowTimePicker(false);
+                  }}>
                     <StyledText className="text-red-500">Cancel</StyledText>
                   </StyledTouchableOpacity>
                   
@@ -235,20 +215,11 @@ export default function SendDateScreen() {
                     {pickerMode === 'date' ? 'Select Date' : 'Select Time'}
                   </StyledText>
                   
-                  <StyledTouchableOpacity 
-                    onPress={() => {
-                      if (pickerMode === 'date') {
-                        setPickerMode('time');
-                      } else {
-                        setShowDatePicker(false);
-                        setShowTimePicker(false);
-                        setPickerMode('date');
-                      }
-                    }}
-                  >
-                    <StyledText className="text-indigo-500">
-                      {pickerMode === 'date' ? 'Next' : 'Done'}
-                    </StyledText>
+                  <StyledTouchableOpacity onPress={() => {
+                    setShowDatePicker(false);
+                    setShowTimePicker(false);
+                  }}>
+                    <StyledText className="text-indigo-500">Done</StyledText>
                   </StyledTouchableOpacity>
                 </StyledView>
                 
@@ -259,7 +230,6 @@ export default function SendDateScreen() {
                   onChange={handleDateTimeChange}
                   style={{ backgroundColor: '#1C2438' }}
                   textColor="#FFFFFF"
-                  minimumDate={new Date()}
                 />
               </StyledView>
             </StyledView>

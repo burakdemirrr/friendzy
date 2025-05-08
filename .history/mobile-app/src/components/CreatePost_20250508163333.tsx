@@ -233,22 +233,22 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
     return (
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
         <div 
-          className="fixed inset-0 bg-black/90 backdrop-blur-xl transition-opacity duration-300"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm"
           onClick={() => setShowWebPicker(false)}
         />
-        <div className="bg-[#0F172A] rounded-2xl shadow-2xl shadow-black/50 w-full max-w-[400px] relative animate-slideUp overflow-hidden border border-slate-700/50">
+        <div className="bg-[#1E293B] rounded-3xl shadow-2xl w-full max-w-md relative animate-slideUp overflow-hidden border border-gray-700/50">
           {/* Header */}
-          <div className="bg-[#1E293B] px-5 py-4 border-b border-slate-700/50">
+          <div className="bg-[#0F172A] px-6 py-4 border-b border-gray-700/50">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-white font-semibold text-lg">Select Date & Time</h2>
-                <p className="text-slate-400 text-sm mt-1">
+                <h2 className="text-white font-bold text-lg">Choose Date & Time</h2>
+                <p className="text-gray-400 text-sm mt-1">
                   {formattedDate} at {formattedTime}
                 </p>
               </div>
               <button 
                 onClick={() => setShowWebPicker(false)}
-                className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700/50 transition-colors"
+                className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-700/50 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -257,23 +257,23 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
             </div>
           </div>
 
-          <div className="p-5">
+          <div className="p-6">
             {/* Calendar Navigation */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-6">
               <button 
                 onClick={handlePrevMonth}
-                className="p-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
+                className="p-2 rounded-full hover:bg-gray-700/50 text-gray-400 hover:text-white transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <h3 className="text-white font-medium">
+              <h3 className="text-white font-semibold text-lg">
                 {months[currentMonth]} {currentYear}
               </h3>
               <button 
                 onClick={handleNextMonth}
-                className="p-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
+                className="p-2 rounded-full hover:bg-gray-700/50 text-gray-400 hover:text-white transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -282,22 +282,22 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
             </div>
 
             {/* Calendar */}
-            <div className="mb-5">
+            <div className="mb-6">
               <div className="grid grid-cols-7 mb-2">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="text-center text-slate-500 text-xs font-medium">
+                  <div key={day} className="text-center text-gray-400 text-xs font-medium pb-2">
                     {day}
                   </div>
                 ))}
               </div>
-              <div className="rounded-xl overflow-hidden bg-slate-800/30 border border-slate-700/50">
+              <div className="border border-gray-700/50 rounded-xl overflow-hidden">
                 {weeks.map((week, weekIndex) => (
-                  <div key={weekIndex} className="grid grid-cols-7 divide-x divide-slate-700/30">
+                  <div key={weekIndex} className="grid grid-cols-7 divide-x divide-gray-700/50">
                     {week.map((day, dayIndex) => {
                       if (day === null) return (
                         <div 
                           key={`empty-${dayIndex}`} 
-                          className="h-10 bg-slate-800/20"
+                          className="h-12 bg-gray-800/30"
                         />
                       );
                       
@@ -318,18 +318,17 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
                           onClick={() => !isPast && handleWebDateSelect(day)}
                           disabled={isPast}
                           className={`
-                            h-10 w-full flex items-center justify-center relative
-                            transition-colors duration-150
-                            ${isSelected ? 'bg-indigo-500/10' : 'hover:bg-slate-700/30'}
-                            ${isPast ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-white'}
-                            ${isToday ? 'font-medium' : ''}
+                            h-12 w-full flex items-center justify-center relative
+                            transition-all duration-200
+                            ${isSelected ? 'bg-indigo-500/20' : weekIndex % 2 === 0 ? 'bg-gray-800/30' : 'bg-transparent'}
+                            ${isPast ? 'text-gray-600 cursor-not-allowed' : 'text-white hover:bg-indigo-500/10'}
+                            ${isToday ? 'font-semibold' : ''}
                           `}
                         >
                           <span className={`
-                            w-8 h-8 flex items-center justify-center rounded-lg
-                            transition-colors duration-150
-                            ${isSelected ? 'bg-indigo-500 text-white' : ''}
-                            ${isToday && !isSelected ? 'ring-1 ring-indigo-400/30' : ''}
+                            w-8 h-8 flex items-center justify-center rounded-full
+                            ${isSelected ? 'bg-indigo-500' : ''}
+                            ${isToday && !isSelected ? 'border-2 border-indigo-500' : ''}
                           `}>
                             {day}
                           </span>
@@ -342,9 +341,9 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
             </div>
 
             {/* Time Selection */}
-            <div className="space-y-3">
-              <h4 className="text-slate-400 text-sm font-medium">Select Time</h4>
-              <div className="grid grid-cols-4 gap-2 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-4">
+              <h4 className="text-gray-400 font-medium">Select Time</h4>
+              <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                 {timeSlots.map(time => {
                   const [hours, minutes] = time.split(':').map(Number);
                   const timeDate = new Date(postDate);
@@ -360,9 +359,9 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
                       onClick={() => !isPast && handleWebTimeSelect(time)}
                       disabled={isPast}
                       className={`
-                        py-2 rounded-lg text-sm font-medium transition-colors duration-150
-                        ${isSelected ? 'bg-indigo-500 text-white' : 'bg-slate-800/50 hover:bg-slate-700/50'}
-                        ${isPast ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:text-white'}
+                        py-3 rounded-xl text-sm font-medium transition-all duration-200
+                        ${isSelected ? 'bg-indigo-500 text-white' : 'bg-gray-800/50'}
+                        ${isPast ? 'text-gray-600 cursor-not-allowed' : 'text-white hover:bg-indigo-500/20'}
                       `}
                     >
                       {time}
@@ -373,10 +372,10 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end space-x-2 mt-5 pt-5 border-t border-slate-700/50">
+            <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-700/50">
               <button
                 onClick={() => setShowWebPicker(false)}
-                className="px-4 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+                className="px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700/50 transition-colors"
               >
                 Cancel
               </button>
@@ -412,7 +411,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
 
     .custom-scrollbar {
       scrollbar-width: thin;
-      scrollbar-color: rgba(99, 102, 241, 0.3) rgba(30, 41, 59, 0.5);
+      scrollbar-color: #4F46E5 #1E293B;
     }
 
     .custom-scrollbar::-webkit-scrollbar {
@@ -420,17 +419,17 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
     }
 
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(30, 41, 59, 0.5);
+      background: #1E293B;
       border-radius: 2px;
     }
 
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background-color: rgba(99, 102, 241, 0.3);
+      background-color: #4F46E5;
       border-radius: 2px;
     }
 
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(99, 102, 241, 0.5);
+      background-color: #6366F1;
     }
   `;
 

@@ -1,0 +1,238 @@
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, Platform, Modal } from 'react-native';
+import { styled } from 'nativewind';
+import { Ionicons } from '@expo/vector-icons';
+import { supabase } from '../../lib/supabase';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTextInput = styled(TextInput);
+const StyledTouchableOpacity = styled(TouchableOpacity);
+
+interface CreatePostProps {
+  onPostCreated: () => void;
+}
+
+export default function CreatePost({ onPostCreated }: CreatePostProps) {
+  const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
+  const [postDate, setPostDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
+  const [isPosting, setIsPosting] = useState(false);
+
+  const handlePost = async () => {
+    if (!description.trim()) {
+      Alert.alert('Error', 'Please write something to post');
+      return;
+    }
+
+    const now = new Date();
+    now.setSeconds(0, 0);
+    const selectedPostDate = new Date(postDate);
+    selectedPostDate.setSeconds(0,0);
+
+    if (selectedPostDate < now) {
+      Alert.alert('Error', 'Please choose a current or future date and time for your post');
+      return;
+    }
+
+    setIsPosting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        Alert.alert('Error', 'You must be logged in to post');
+        return;
+      }
+
+      const { data: dateData, error: dateError } = await supabase
+        .from('dates')
+        .insert({
+          datetime: postDate.toISOString(),
+          location: location.trim() || null,
+          sender_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (dateError) throw dateError;
+
+      const { error: postError } = await supabase
+        .from('posts')
+        .insert({
+          user_id: user.id,
+          description: description.trim(),
+          date_id: dateData.id,
+        });
+
+      if (postError) throw postError;
+
+      setDescription('');
+      setLocation('');
+      setPostDate(new Date());
+      onPostCreated();
+      
+    } catch (error) {
+      console.error('Error creating post:', error);
+      Alert.alert('Error', 'Failed to create post. Please try again.');
+    } finally {
+      setIsPosting(false);
+    }
+  };
+
+  const handleDateTimeChange = (event: any, selectedValue: Date | undefined) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+      setShowTimePicker(false);
+    }
+    
+    if (selectedValue) {
+      const newDate = new Date(postDate);
+      
+      if (pickerMode === 'date') {
+        newDate.setFullYear(
+          selectedValue.getFullYear(),
+          selectedValue.getMonth(),
+          selectedValue.getDate()
+        );
+        if (Platform.OS === 'ios') {
+          setPickerMode('time');
+        } else if (Platform.OS === 'android') {
+          setTimeout(() => {
+            setPickerMode('time');
+            setShowTimePicker(true);
+          }, 100);
+        }
+      } else {
+        newDate.setHours(selectedValue.getHours(), selectedValue.getMinutes());
+      }
+      setPostDate(newDate);
+    }
+  };
+
+  const openDatePicker = () => {
+    setPickerMode('date');
+    setShowDatePicker(true);
+  };
+
+  const openTimePicker = () => {
+    setPickerMode('time');
+    setShowTimePicker(true);
+  };
+
+  const formattedDate = postDate.toLocaleDateString();
+  const formattedTime = postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  return (
+    <StyledView className="bg-[#1E293B] p-4 mb-4 rounded-xl">
+      <StyledTextInput
+        className="bg-[#0F172A] text-white p-4 rounded-xl mb-3 min-h-[80px] font-sora-regular"
+        placeholder="What's on your mind?"
+        placeholderTextColor="#64748B"
+        multiline
+        value={description}
+        onChangeText={setDescription}
+      />
+      
+      <StyledView className="flex-row items-center mb-3">
+        <Ionicons name="location-outline" size={20} color="#64748B" />
+        <StyledTextInput
+          className="flex-1 bg-[#0F172A] text-white px-3 py-2.5 rounded-xl ml-2 font-sora-regular"
+          placeholder="Add location (optional)"
+          placeholderTextColor="#64748B"
+          value={location}
+          onChangeText={setLocation}
+        />
+      </StyledView>
+
+      <StyledView className="flex-row space-x-2 mb-3">
+        <StyledTouchableOpacity
+          onPress={openDatePicker}
+          className="flex-1 bg-[#0F172A] rounded-xl p-2.5 flex-row items-center justify-between"
+        >
+          <StyledView className="flex-row items-center">
+            <Ionicons name="calendar-outline" size={20} color="#818CF8" />
+            <StyledText className="text-white ml-2 font-sora-regular">{formattedDate}</StyledText>
+          </StyledView>
+          <Ionicons name="chevron-down" size={16} color="#64748B" />
+        </StyledTouchableOpacity>
+        
+        <StyledTouchableOpacity
+          onPress={openTimePicker}
+          className="flex-1 bg-[#0F172A] rounded-xl p-2.5 flex-row items-center justify-between"
+        >
+          <StyledView className="flex-row items-center">
+            <Ionicons name="time-outline" size={20} color="#818CF8" />
+            <StyledText className="text-white ml-2 font-sora-regular">{formattedTime}</StyledText>
+          </StyledView>
+          <Ionicons name="chevron-down" size={16} color="#64748B" />
+        </StyledTouchableOpacity>
+      </StyledView>
+
+      {Platform.OS === 'android' && showDatePicker && (
+        <DateTimePicker
+          value={postDate}
+          mode="date"
+          display="default"
+          onChange={handleDateTimeChange}
+        />
+      )}
+      {Platform.OS === 'android' && showTimePicker && (
+        <DateTimePicker
+          value={postDate}
+          mode="time"
+          display="default"
+          onChange={handleDateTimeChange}
+        />
+      )}
+      {Platform.OS === 'ios' && (showDatePicker || showTimePicker) && (
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={showDatePicker || showTimePicker}
+          onRequestClose={() => { setShowDatePicker(false); setShowTimePicker(false); }}
+        >
+          <StyledTouchableOpacity 
+            className="flex-1 justify-end bg-black/50" 
+            activeOpacity={1} 
+            onPressOut={() => { setShowDatePicker(false); setShowTimePicker(false); }}
+          >
+            <StyledView className="bg-[#1C2438] rounded-t-xl p-4" onStartShouldSetResponder={() => true}>
+              <StyledView className="flex-row justify-between items-center mb-4">
+                <StyledTouchableOpacity onPress={() => { setShowDatePicker(false); setShowTimePicker(false); }}>
+                  <StyledText className="text-red-500 font-sora-medium">Cancel</StyledText>
+                </StyledTouchableOpacity>
+                <StyledText className="text-white font-sora-bold">
+                  {pickerMode === 'date' ? 'Select Date' : 'Select Time'}
+                </StyledText>
+                <StyledTouchableOpacity onPress={() => { setShowDatePicker(false); setShowTimePicker(false); }}>
+                  <StyledText className="text-indigo-500 font-sora-medium">Done</StyledText>
+                </StyledTouchableOpacity>
+              </StyledView>
+              <DateTimePicker
+                value={postDate}
+                mode={pickerMode}
+                display="spinner"
+                onChange={handleDateTimeChange}
+                style={{ backgroundColor: '#1C2438' }}
+                textColor="#FFFFFF"
+              />
+            </StyledView>
+          </StyledTouchableOpacity>
+        </Modal>
+      )}
+
+      <StyledTouchableOpacity
+        onPress={handlePost}
+        disabled={isPosting}
+        className={`bg-indigo-500 p-3 rounded-xl ${isPosting ? 'opacity-50' : ''}`}
+      >
+        <StyledText className="text-white text-center font-sora-medium">
+          {isPosting ? 'Posting...' : 'Post'}
+        </StyledText>
+      </StyledTouchableOpacity>
+    </StyledView>
+  );
+} 

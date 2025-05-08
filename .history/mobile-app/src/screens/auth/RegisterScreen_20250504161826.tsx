@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, Animated, Easing } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar } from 'react-native';
 import { supabase } from '../../../lib/supabase';
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
@@ -30,49 +30,6 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<NavigationProp>();
-
-  // Animation values
-  const fadeAnim = new Animated.Value(0);
-  const slideAnim = new Animated.Value(20);
-  const scaleAnim = new Animated.Value(0.98);
-  const [buttonScale] = useState(new Animated.Value(1));
-
-  useEffect(() => {
-    // Entrance animation
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-    ]).start();
-  }, []);
-
-  // Button press animation
-  const animateButtonPress = (pressed: boolean) => {
-    Animated.spring(buttonScale, {
-      toValue: pressed ? 0.96 : 1,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 4,
-    }).start();
-  };
-
-  const AnimatedStyledView = Animated.createAnimatedComponent(StyledView);
-  const AnimatedStyledTouchableOpacity = Animated.createAnimatedComponent(StyledTouchableOpacity);
 
   const handleRegister = async () => {
     if (!email || !password) {
@@ -115,72 +72,49 @@ export default function RegisterScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        <AnimatedStyledView 
-          className="flex-1 justify-between px-6"
-          style={{
-            opacity: fadeAnim,
-            transform: [
-              { translateY: slideAnim },
-              { scale: scaleAnim }
-            ],
-          }}
-        >
+        <StyledView className="flex-1 justify-between px-6">
           {/* Top Section */}
           <StyledView className="pt-12">
             <StyledView className="mb-8">
-              <AnimatedStyledView 
+              <StyledView 
                 className="h-16 w-16 rounded-2xl items-center justify-center mb-6"
                 style={{
                   backgroundColor: `${colors.primary}10`,
-                  ...shadows.sm,
-                  transform: [{ scale: scaleAnim }],
+                  ...shadows.sm
                 }}
               >
                 <Ionicons name="person-add" size={32} color={colors.primary} />
-              </AnimatedStyledView>
-              <AnimatedStyledView
-                style={{
-                  opacity: fadeAnim,
-                  transform: [{ translateY: slideAnim }],
+              </StyledView>
+              <StyledText 
+                className="text-[34px] font-bold mb-2"
+                style={{ 
+                  color: colors.text.primary,
+                  letterSpacing: 0.37
                 }}
               >
-                <StyledText 
-                  className="text-[34px] font-bold mb-2"
-                  style={{ 
-                    color: colors.text.primary,
-                    letterSpacing: 0.37
-                  }}
-                >
-                  Create Account
+                Create Account
               </StyledText>
-                <StyledText 
-                  className="text-base"
-                  style={{ 
-                    color: colors.text.secondary,
-                    letterSpacing: -0.41
-                  }}
-                >
+              <StyledText 
+                className="text-base"
+                style={{ 
+                  color: colors.text.secondary,
+                  letterSpacing: -0.41
+                }}
+              >
                 Sign up to get started
               </StyledText>
-              </AnimatedStyledView>
             </StyledView>
           </StyledView>
 
           {/* Form Section */}
-          <AnimatedStyledView 
-            className="space-y-6 mb-8"
-            style={{
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            }}
-          >
-              <StyledView>
+          <StyledView className="space-y-6 mb-8">
+            <StyledView>
               <StyledText 
                 className="text-sm font-medium mb-2 ml-1"
                 style={{ color: colors.text.secondary }}
               >
-                  Email Address
-                </StyledText>
+                Email Address
+              </StyledText>
               <StyledView 
                 className="rounded-xl flex-row items-center px-4"
                 style={{ 
@@ -189,30 +123,30 @@ export default function RegisterScreen() {
                 }}
               >
                 <Ionicons name="mail-outline" size={20} color={colors.text.secondary} />
-                  <StyledTextInput
+                <StyledTextInput
                   className="flex-1 py-3.5 px-3 text-base"
                   style={{ 
                     color: colors.text.primary,
                     fontSize: typography.body.fontSize,
                     letterSpacing: typography.body.letterSpacing
                   }}
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    placeholder="Enter your email"
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  placeholder="Enter your email"
                   placeholderTextColor={colors.text.muted}
-                  />
-                </StyledView>
+                />
               </StyledView>
+            </StyledView>
 
-              <StyledView>
+            <StyledView>
               <StyledText 
                 className="text-sm font-medium mb-2 ml-1"
                 style={{ color: colors.text.secondary }}
               >
-                  Password
-                </StyledText>
+                Password
+              </StyledText>
               <StyledView 
                 className="rounded-xl flex-row items-center px-4"
                 style={{ 
@@ -221,31 +155,31 @@ export default function RegisterScreen() {
                 }}
               >
                 <Ionicons name="lock-closed-outline" size={20} color={colors.text.secondary} />
-                  <StyledTextInput
+                <StyledTextInput
                   className="flex-1 py-3.5 px-3 text-base"
                   style={{ 
                     color: colors.text.primary,
                     fontSize: typography.body.fontSize,
                     letterSpacing: typography.body.letterSpacing
                   }}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
                   placeholder="Create a password"
                   placeholderTextColor={colors.text.muted}
-                  />
+                />
                 <StyledTouchableOpacity 
                   onPress={() => setShowPassword(!showPassword)}
                   className="p-2"
                 >
-                    <Ionicons 
-                      name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                      size={20} 
+                  <Ionicons 
+                    name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                    size={20} 
                     color={colors.text.secondary}
-                    />
+                  />
                 </StyledTouchableOpacity>
-                </StyledView>
               </StyledView>
+            </StyledView>
 
             <StyledView>
               <StyledText 
@@ -253,7 +187,7 @@ export default function RegisterScreen() {
                 style={{ color: colors.text.secondary }}
               >
                 Confirm Password
-                    </StyledText>
+              </StyledText>
               <StyledView 
                 className="rounded-xl flex-row items-center px-4"
                 style={{ 
@@ -277,26 +211,17 @@ export default function RegisterScreen() {
                 />
               </StyledView>
             </StyledView>
-          </AnimatedStyledView>
+          </StyledView>
 
           {/* Bottom Section */}
-          <AnimatedStyledView 
-            className="space-y-4 mb-8"
-            style={{
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            }}
-          >
-            <AnimatedStyledTouchableOpacity
+          <StyledView className="space-y-4 mb-8">
+            <StyledTouchableOpacity
               onPress={handleRegister}
               disabled={isLoading}
-              onPressIn={() => animateButtonPress(true)}
-              onPressOut={() => animateButtonPress(false)}
               className="h-[52px] rounded-xl items-center justify-center"
               style={{ 
                 backgroundColor: colors.primary,
-                ...shadows.sm,
-                transform: [{ scale: buttonScale }],
+                ...shadows.sm
               }}
             >
               <StyledText 
@@ -308,17 +233,14 @@ export default function RegisterScreen() {
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </StyledText>
-            </AnimatedStyledTouchableOpacity>
+            </StyledTouchableOpacity>
 
-            <AnimatedStyledTouchableOpacity
+            <StyledTouchableOpacity
               onPress={() => navigation.navigate('Login')}
-              onPressIn={() => animateButtonPress(true)}
-              onPressOut={() => animateButtonPress(false)}
               className="h-[52px] rounded-xl items-center justify-center"
               style={{ 
                 backgroundColor: colors.background.secondary,
-                ...shadows.sm,
-                transform: [{ scale: buttonScale }],
+                ...shadows.sm
               }}
             >
               <StyledText 
@@ -330,9 +252,9 @@ export default function RegisterScreen() {
               >
                 Sign In Instead
               </StyledText>
-            </AnimatedStyledTouchableOpacity>
-          </AnimatedStyledView>
-        </AnimatedStyledView>
+            </StyledTouchableOpacity>
+          </StyledView>
+        </StyledView>
       </StyledKeyboardAvoidingView>
     </StyledSafeAreaView>
   );

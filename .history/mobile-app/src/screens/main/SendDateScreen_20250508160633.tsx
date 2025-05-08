@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Platform, Modal } from 'react-native';
 import { styled } from 'nativewind';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import DateTimePicker, { AndroidEvent, Event } from '@react-native-community/datetimepicker';
 import { supabase } from '../../../lib/supabase';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -84,8 +84,8 @@ export default function SendDateScreen() {
   const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   // Handle date or time change
-  const handleDateTimeChange = (event: DateTimePickerEvent, selectedValue?: Date) => {
-    const { type } = event;
+  const handleDateTimeChange = (event: Event | AndroidEvent, selectedValue?: Date) => {
+    const { type, nativeEvent } = event;
     
     // Handle Android cancel action
     if (type === 'dismissed' || (Platform.OS === 'android' && !selectedValue)) {
